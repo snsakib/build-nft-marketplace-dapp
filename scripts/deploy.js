@@ -1,10 +1,16 @@
 const { ethers } = require("hardhat");
+const fs = require("fs");
 
 async function main() {
   const nftMarketplace = await ethers.deployContract("NFTMarketplace");
   await nftMarketplace.waitForDeployment();
 
-  console.log("Contract deployed");
+  fs.writeFileSync(
+    "./scripts/config.js",
+    `export const NFTMarketplaceAddress = "${nftMarketplace.target}"`
+  );
+
+  console.log(`Contract Deployed.`);
 }
 
 main()
