@@ -1,31 +1,32 @@
 "use client";
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
-import Marketplace from "../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json";
-import { NFTMarketplaceAddress } from "../scripts/config";
+import Marketplace from "../../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json";
+import { NFTMarketplaceAddress } from "../../scripts/config";
 import axios from "axios";
 import { GetIpfsUrlFromPinata } from "@/scripts/pinata";
 import NFTCard from "@/components/NFTCard";
 
-export default function Home() {
+export default function MyNFT() {
   const [data, updateData] = useState([]);
   let provider;
+  let signer = null;
 
-  async function getAllNFTs() {
+  async function getMyNFTs() {
     if (window.ethereum === null) {
       console.log("Please Install Metamask");
     } else {
       provider = new ethers.BrowserProvider(window.ethereum);
+      signer = await provider.getSigner();
+      console.log(signer);
       let contract = new ethers.Contract(
         NFTMarketplaceAddress,
         Marketplace.abi,
-        provider
+        signer
       );
-      console.log(provider);
-      let transaction = await contract.getAllNFTs();
+      let transaction = await contract.getMyNFTs();
       let items = await Promise.all(
         transaction.map(async (item) => {
-          console.log(item);
           let tokenURI = await contract.tokenURI(item.id);
           tokenURI = GetIpfsUrlFromPinata(tokenURI);
           let meta = await axios.get(tokenURI);
@@ -47,7 +48,7 @@ export default function Home() {
   }
 
   useEffect(() => {
-    getAllNFTs();
+    getMyNFTs();
   }, []);
 
   return (
