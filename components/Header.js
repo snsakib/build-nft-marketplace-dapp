@@ -2,10 +2,6 @@
 import Image from "next/image";
 import Link from "next/link";
 
-/**
- * Functional component representing the header of the NFT Marketplace.
- * @returns JSX element
- */
 export default function Header() {
   return (
     <header className="flex flex-col min-[825px]:flex-row justify-between py-5 px-10 border-b-2 border-black">
