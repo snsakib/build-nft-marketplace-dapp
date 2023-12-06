@@ -1,23 +1,8 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { WalletContext } from "@/context/WalletContext";
-import { useContext } from "react";
 
 export default function Header() {
-  const { walletAddress, setWalletAddress } = useContext(WalletContext);
-
-  const connectWallet = async () => {
-    try {
-      const provider = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      setWalletAddress(provider[0]);
-    } catch (error) {
-      console.error("Failed to connect wallet:", error);
-    }
-  };
-
   return (
     <header className="flex flex-col min-[825px]:flex-row justify-between py-5 px-10 border-b-2 border-black">
       {/* Logo and site title section */}
@@ -41,14 +26,6 @@ export default function Header() {
             My NFT
           </Link>
         </div>
-        <button
-          className="block py-1 px-3 ml-2 rounded-md font-bold text-lg bg-blue-500"
-          onClick={connectWallet}
-        >
-          {walletAddress
-            ? walletAddress.substring(0, 6) + "..."
-            : "Connect Wallet"}
-        </button>
       </div>
     </header>
   );
