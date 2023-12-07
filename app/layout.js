@@ -9,13 +9,13 @@ const inter = Inter({ subsets: ["latin"] });
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <WalletProvider>
-        <body className={inter.className}>
+      <body className={inter.className}>
+        <WalletProvider>
           <Header />
           {children}
           <Footer />
-        </body>
-      </WalletProvider>
+        </WalletProvider>
+      </body>
     </html>
   );
 }
