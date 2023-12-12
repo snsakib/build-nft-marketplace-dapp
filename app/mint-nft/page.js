@@ -29,7 +29,7 @@ export default function MintNFT() {
         </div>
         <div className="flex flex-col justify-around items-start my-5 min-w-full">
           <label htmlFor="image" className="text-xl font-bold text-sky-900">
-            Upload Image <span className="text-red-700">*</span>
+            NFT Image <span className="text-red-700">*</span>
           </label>
           <input
             type="file"
@@ -43,7 +43,7 @@ export default function MintNFT() {
         </div>
         <div className="flex flex-col justify-around items-start my-5 min-w-full">
           <label htmlFor="price" className="text-xl font-bold text-sky-900">
-            Price (ETH) <span className="text-red-700">*</span>
+            NFT Price (ETH) <span className="text-red-700">*</span>
           </label>
           <input
             type="number"
