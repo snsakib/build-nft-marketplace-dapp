@@ -10,7 +10,7 @@ export default function MintNFT() {
   const [msg, setMsg] = useState("");
 
   return (
-    <div className="flex flex-col items-center py-10">
+    <div className="flex flex-col items-center py-10 h-screen">
       <h1 className="text-3xl font-bold text-sky-900 mb-5">Create NFT</h1>
       <form className="border-2 border-sky-900 rounded-md flex flex-col justify-around items-center min-h-max p-10">
         <div className="flex flex-col justify-around items-start mb-5 min-w-full">
