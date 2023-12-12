@@ -7,7 +7,6 @@ export default function MintNFT() {
     price: "",
   });
   const [file, setFile] = useState(null);
-  const [msg, setMsg] = useState("");
 
   return (
     <div className="flex flex-col items-center py-10 h-screen">
@@ -54,9 +53,6 @@ export default function MintNFT() {
             onChange={(e) => setNftData({ ...nftData, price: e.target.value })}
             required
           />
-        </div>
-        <div>
-          <p>{msg}</p>
         </div>
         <div className="flex flex-col justify-around items-start mt-5 min-w-full">
           <button
