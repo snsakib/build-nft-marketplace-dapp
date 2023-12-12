@@ -43,7 +43,7 @@ export default function MintNFT() {
         </div>
         <div className="flex flex-col justify-around items-start my-5 min-w-full">
           <label htmlFor="price" className="text-xl font-bold text-sky-900">
-            Price (in ETH) <span className="text-red-700">*</span>
+            Price (ETH) <span className="text-red-700">*</span>
           </label>
           <input
             type="number"
