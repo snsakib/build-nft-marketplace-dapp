@@ -1,4 +1,5 @@
 "use client";
+import axios from "axios";
 import { useState } from "react";
 
 export default function MintNFT() {
@@ -8,10 +9,29 @@ export default function MintNFT() {
   });
   const [file, setFile] = useState(null);
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      let formData = new FormData();
+      formData.append("name", nftData.name);
+      formData.append("price", nftData.price);
+      formData.append("file", file);
+
+      let res = await axios.post('/api/mint-nft', formData);
+    } catch (error) {
+      console.error("Error minting NFT", error.message);
+      throw error;
+    }
+  };
+
   return (
     <div className="flex flex-col items-center py-10 h-screen">
       <h1 className="text-3xl font-bold text-sky-900 mb-5">Create NFT</h1>
-      <form className="border-2 border-sky-900 rounded-md flex flex-col justify-around items-center min-h-max p-10">
+      <form
+        className="border-2 border-sky-900 rounded-md flex flex-col justify-around items-center min-h-max p-10"
+        onSubmit={handleSubmit}
+      >
         <div className="flex flex-col justify-around items-start mb-5 min-w-full">
           <label htmlFor="name" className="text-xl font-bold text-sky-900">
             NFT Name <span className="text-red-700">*</span>
