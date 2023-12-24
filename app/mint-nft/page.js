@@ -8,9 +8,11 @@ export default function MintNFT() {
     price: "",
   });
   const [file, setFile] = useState(null);
+  const [loadingMsg, setLoadingMsg] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoadingMsg("Minting NFT...");
 
     try {
       let formData = new FormData();
@@ -18,7 +20,7 @@ export default function MintNFT() {
       formData.append("price", nftData.price);
       formData.append("file", file);
 
-      let res = await axios.post('/api/mint-nft', formData);
+      let res = await axios.post("/api/mint-nft", formData);
     } catch (error) {
       console.error("Error minting NFT", error.message);
       throw error;
@@ -73,6 +75,9 @@ export default function MintNFT() {
             onChange={(e) => setNftData({ ...nftData, price: e.target.value })}
             required
           />
+        </div>
+        <div>
+          <p className="text-green-600 font-bold">{loadingMsg}</p>
         </div>
         <div className="flex flex-col justify-around items-start mt-5 min-w-full">
           <button
