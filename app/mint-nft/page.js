@@ -22,29 +22,31 @@ export default function MintNFT() {
       formData.append("price", nftData.price);
       formData.append("file", file);
 
-      let IPFSHash = await axios.post("/api/mint-nft", formData);
+      let res = await axios.post("/api/mint-nft", formData);
+      const NFT_URI = `https://ipfs.io/ipfs/${res.data}`;
 
       if (window.ethereum === null) {
         setLoadingMsg("Please Install MetaMask");
       } else {
         let provider = new ethers.BrowserProvider(window.ethereum);
         let signer = await provider.getSigner();
-        
         let contract = new ethers.Contract(
-            process.env.NEXT_PUBLIC_NFT_MARKETPLACE_ADDRESS,
-            NFTMarketplace.abi,
-            signer
+          process.env.NEXT_PUBLIC_NFT_MARKETPLACE_ADDRESS,
+          NFTMarketplace.abi,
+          signer
         );
-        let NFTPriceInWei = parseEther(nftData.price)
+
+        let NFTPriceInWei = parseEther(nftData.price);
         let listingPrice = await contract.listingPrice();
         listingPrice = listingPrice.toString();
 
-        let transaction = await contract.mintNFT(
-          `https://gateway.pinata.cloud/ipfs/${IPFSHash}`,
-          NFTPriceInWei,
-          { value: listingPrice }
-        )
-        console.log(transaction)
+        let transaction = await contract.mintNFT(NFT_URI, NFTPriceInWei, {
+          value: listingPrice,
+        });
+
+        if (transaction) {
+          setLoadingMsg("NFT Minted Successfully");
+        }
       }
     } catch (error) {
       console.error("Error minting NFT", error.message);
