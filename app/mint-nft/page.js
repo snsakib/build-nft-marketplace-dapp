@@ -1,6 +1,8 @@
 "use client";
 import axios from "axios";
+import { ethers, parseEther } from "ethers";
 import { useState } from "react";
+import NFTMarketplace from "../../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json";
 
 export default function MintNFT() {
   const [nftData, setNftData] = useState({
@@ -20,7 +22,30 @@ export default function MintNFT() {
       formData.append("price", nftData.price);
       formData.append("file", file);
 
-      let res = await axios.post("/api/mint-nft", formData);
+      let IPFSHash = await axios.post("/api/mint-nft", formData);
+
+      if (window.ethereum === null) {
+        setLoadingMsg("Please Install MetaMask");
+      } else {
+        let provider = new ethers.BrowserProvider(window.ethereum);
+        let signer = await provider.getSigner();
+        
+        let contract = new ethers.Contract(
+            process.env.NEXT_PUBLIC_NFT_MARKETPLACE_ADDRESS,
+            NFTMarketplace.abi,
+            signer
+        );
+        let NFTPriceInWei = parseEther(nftData.price)
+        let listingPrice = await contract.listingPrice();
+        listingPrice = listingPrice.toString();
+
+        let transaction = await contract.mintNFT(
+          `https://gateway.pinata.cloud/ipfs/${IPFSHash}`,
+          NFTPriceInWei,
+          { value: listingPrice }
+        )
+        console.log(transaction)
+      }
     } catch (error) {
       console.error("Error minting NFT", error.message);
       throw error;
