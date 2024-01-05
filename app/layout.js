@@ -12,7 +12,7 @@ export default function RootLayout({ children }) {
       <body className={inter.className}>
         <WalletProvider>
           <Header />
-          {children}
+          <main>{children}</main>
           <Footer />
         </WalletProvider>
       </body>
