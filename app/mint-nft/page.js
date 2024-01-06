@@ -50,7 +50,6 @@ export default function MintNFT() {
       }
     } catch (error) {
       console.error("Error minting NFT", error.message);
-      throw error;
     }
   };
 
