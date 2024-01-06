@@ -6,7 +6,7 @@ export default function NFTCard(data) {
     <div className="border-2 border-sky-900 rounded w-10/12">
       <div>
         <div className="relative h-[300px]">
-          <Image src={imgURL} fill sizes="100%" alt="Image of the NFT" />
+          <Image src={imgURL} fill alt="Image of the NFT" />
         </div>
         <div className="p-3 text-black">
           <h1 className="font-bold text-xl">{data.data.name}</h1>
