@@ -8,7 +8,7 @@ import NFTCard from "@/components/NFTCard";
 export default function Home() {
   const [data, updateData] = useState([]);
 
-  async function getAllNFTs() {
+  let getAllNFTs = async () => {
     try {
       if (window.ethereum === null) {
         console.error("Please Install Metamask");
