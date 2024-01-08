@@ -1,25 +1,26 @@
 "use client";
-import { ethers } from "ethers";
-import NFTMarketplace from "../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json";
 import { useEffect, useState } from "react";
+import { ethers } from "ethers";
 import axios from "axios";
+import NFTMarketplace from "../../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json";
 import NFTCard from "@/components/NFTCard";
 
-export default function Home() {
+export default function MyNFT() {
   const [data, updateData] = useState([]);
 
-  let getAllNFTs = async () => {
+  let getMyNFTs = async () => {
     try {
       if (window.ethereum === null) {
-        console.error("Please Install Metamask");
+        console.log("Please Install Metamask");
       } else {
         let provider = new ethers.BrowserProvider(window.ethereum);
+        let signer = await provider.getSigner();
         let contract = new ethers.Contract(
           process.env.NEXT_PUBLIC_NFT_MARKETPLACE_ADDRESS,
           NFTMarketplace.abi,
-          provider
+          signer
         );
-        let transaction = await contract.getAllNFTs();
+        let transaction = await contract.getMyNFTs();
         let items = await Promise.all(
           transaction.map(async (item) => {
             let tokenURI = await contract.tokenURI(item.id);
@@ -35,15 +36,16 @@ export default function Home() {
             return NFT;
           })
         );
+
         updateData(items);
       }
     } catch (error) {
       console.error("Error fetching NFT metadata:", error);
     }
-  }
+  };
 
   useEffect(() => {
-    getAllNFTs();
+    getMyNFTs();
   }, []);
 
   return (
