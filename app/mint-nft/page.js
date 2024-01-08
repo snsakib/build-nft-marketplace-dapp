@@ -23,7 +23,7 @@ export default function MintNFT() {
       formData.append("file", file);
 
       let res = await axios.post("/api/mint-nft", formData);
-      const NFT_URI = `https://ipfs.io/ipfs/${res.data}`;
+      const NFT_URI = `https://ipfs.io/ipfs/${res.data.IpfsHash}`;
 
       if (window.ethereum === null) {
         setLoadingMsg("Please Install MetaMask");
