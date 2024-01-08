@@ -3,17 +3,20 @@ import { NextResponse } from "next/server";
 // Define Pinata API endpoints and headers
 const PINATA_FILE_URL = "https://api.pinata.cloud/pinning/pinFileToIPFS";
 const PINATA_METADATA_URL = "https://api.pinata.cloud/pinning/pinJSONToIPFS";
-let pinataHeaders = {
-  Authorization: `Bearer ${process.env.PINATA_JWT_TOKEN}`,
-};
+let pinataHeaders = {};
 
 // Define an asynchronous function to pin a NFT data to IPFS
 async function pinToIPFS(url, data, apiType) {
   try {
+    if (apiType === "FILE") {
+      pinataHeaders = {
+        Authorization: `Bearer ${process.env.PINATA_JWT_TOKEN}`,
+      };
+    }
     if (apiType === "JSON") {
       pinataHeaders = {
-        ...pinataHeaders,
         "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.PINATA_JWT_TOKEN}`,
       };
     }
     // Make a POST request to the specified URL with provided headers and form data
@@ -30,7 +33,7 @@ async function pinToIPFS(url, data, apiType) {
 
     // Parse the response JSON and return the IPFS hash
     const responseData = await response.json();
-    return responseData.IpfsHash;
+    return responseData;
   } catch (error) {
     // Log and throw any errors that occur during the pinning process
     console.error("Error pinning to IPFS:", error.message);
@@ -61,7 +64,7 @@ export async function POST(request) {
     const nftMetadata = {
       name: NFT_NAME,
       price: NFT_PRICE,
-      img: nftImgCID,
+      img: nftImgCID.IpfsHash,
     };
 
     // Pin the NFT metadata to IPFS and get the resulting CID
@@ -72,7 +75,7 @@ export async function POST(request) {
     );
 
     // Log success message and return the metadata CID as JSON response
-    console.log("Successfully pinned metadata:", nftMetadataCID);
+    console.log("Successfully pinned metadata:", nftMetadataCID.IpfsHash);
     return NextResponse.json(nftMetadataCID);
   } catch (error) {
     // Log and return an error response if an exception occurs during processing
