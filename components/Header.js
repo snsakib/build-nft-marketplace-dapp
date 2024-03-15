@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { WalletContext } from "@/context/WalletContext";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 
 export default function Header() {
   const { walletAddress, setWalletAddress } = useContext(WalletContext);
@@ -10,18 +10,18 @@ export default function Header() {
   const connectWallet = async () => {
     try {
       const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
+        method: "wallet_requestPermissions",
+        params: [
+          {
+            eth_accounts: {},
+          },
+        ],
       });
-      setWalletAddress(accounts[0]);
+      setWalletAddress(accounts[0].caveats[0].value[0]);
     } catch (error) {
       console.error("Failed to connect wallet:", error);
     }
   };
-  useEffect(() => {
-    if (window.ethereum) {
-      window.ethereum.on("accountsChanged", connectWallet);
-    }
-  });
 
   return (
     <header className="flex flex-col min-[825px]:flex-row justify-between py-5 px-10 border-b-2 border-black">
