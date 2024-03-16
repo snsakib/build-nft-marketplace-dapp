@@ -10,7 +10,14 @@ export default function NFTCard(data) {
         </div>
         <div className="p-3 text-black">
           <h1 className="font-bold text-xl">{data.data.name}</h1>
-          <p className="text-base mt-2 font-medium">{data.data.price} ETH</p>
+          <p className="text-base mt-2 font-medium">
+            <span className="font-semibold">Owner: </span>
+            {data.data.owner.substring(0, 6) + "..."}
+          </p>
+          <p className="text-base mt-2 font-medium">
+            <span className="font-semibold">Price: </span>
+            {data.data.price} ETH
+          </p>
         </div>
       </div>
       <div className="py-3 mx-3">
