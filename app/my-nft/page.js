@@ -48,6 +48,14 @@ export default function MyNFT() {
     getMyNFTs();
   }, []);
 
+  useEffect(() => {
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", getMyNFTs);
+
+      return () => window.ethereum.removeListener("accountsChanged", getMyNFTs);
+    }
+  });
+
   return (
     <div className="grid grid-cols-1 min-[650px]:grid-cols-2 min-[950px]:grid-cols-3 min-[1250px]:grid-cols-4 gap-5 place-items-center p-5">
       {data.map((value, index) => {
