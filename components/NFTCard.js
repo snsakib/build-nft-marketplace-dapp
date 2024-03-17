@@ -2,8 +2,10 @@
 import { ethers, parseEther } from "ethers";
 import NFTMarketplace from "../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 export default function NFTCard(data) {
+  const [isOwner, setIsOwner] = useState(false);
   let imgURL = "https://ipfs.io/ipfs/" + data.data.img;
 
   let buyNFT = async (id, price) => {
@@ -38,6 +40,23 @@ export default function NFTCard(data) {
     }
   };
 
+  useEffect(() => {
+    const checkOwnership = async () => {
+      if (window.ethereum) {
+        let provider = new ethers.BrowserProvider(window.ethereum);
+        let signer = await provider.getSigner();
+
+        let address = await signer.getAddress();
+        setIsOwner(address === data.data.owner);
+      }
+    };
+
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", checkOwnership);
+      checkOwnership();
+    }
+  });
+
   return (
     <div className="border-2 border-sky-900 rounded w-10/12">
       <div>
@@ -57,12 +76,18 @@ export default function NFTCard(data) {
         </div>
       </div>
       <div className="py-3 mx-3">
-        <button
-          className="bg-blue-500 rounded p-2 w-full font-bold"
-          onClick={() => buyNFT(data.data.id, data.data.price)}
-        >
-          Buy NFT
-        </button>
+        {!isOwner ? (
+          <button
+            className="bg-blue-500 rounded p-2 w-full font-bold"
+            onClick={() => buyNFT(data.data.id, data.data.price)}
+          >
+            Buy NFT
+          </button>
+        ) : (
+          <button className="bg-blue-500 rounded p-2 w-full font-bold">
+            Owned
+          </button>
+        )}
       </div>
     </div>
   );
