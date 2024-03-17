@@ -54,6 +54,9 @@ export default function NFTCard(data) {
     if (window.ethereum) {
       window.ethereum.on("accountsChanged", checkOwnership);
       checkOwnership();
+
+      return () =>
+        window.ethereum.removeListener("accountsChanged", checkOwnership);
     }
   });
 
