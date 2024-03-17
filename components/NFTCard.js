@@ -53,7 +53,7 @@ export default function NFTCard(data) {
 
     if (window.ethereum) {
       window.ethereum.on("accountsChanged", checkOwnership);
-      checkOwnership(); // Call initially to set ownership state
+      checkOwnership();
     }
   });
 
