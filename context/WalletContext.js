@@ -1,5 +1,4 @@
-"use client"; // Unusual statement, might be specific to the environment or tooling
-
+"use client";
 // Importing necessary functions from the 'react' library
 import { createContext, useState } from "react";
 
@@ -14,7 +13,8 @@ export const WalletProvider = ({ children }) => {
   // Returning a 'WalletContext.Provider' with the 'value' prop set to the state and state-setting function
   return (
     <WalletContext.Provider value={{ walletAddress, setWalletAddress }}>
-      {children} {/* Rendering the child components wrapped by 'WalletProvider' */}
+      {children}{" "}
+      {/* Rendering the child components wrapped by 'WalletProvider' */}
     </WalletContext.Provider>
   );
 };
