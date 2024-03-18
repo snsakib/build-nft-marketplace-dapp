@@ -36,7 +36,7 @@ export default function NFTCard(data) {
         await transaction.wait();
       }
     } catch (error) {
-      console.error("Error minting NFT", error.message);
+      console.error("Error buying NFT", error.message);
     }
   };
 
