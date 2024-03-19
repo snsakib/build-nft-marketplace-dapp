@@ -10,26 +10,41 @@ export default function MintNFT() {
     price: "",
   });
   const [file, setFile] = useState(null);
-  const [loadingMsg, setLoadingMsg] = useState("");
+  const [loadingMsg, setLoadingMsg] = useState({
+    text: "",
+    status: "",
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoadingMsg("Minting NFT...");
 
     try {
-      let formData = new FormData();
-      formData.append("name", nftData.name);
-      formData.append("price", nftData.price);
-      formData.append("file", file);
-
-      let res = await axios.post("/api/mint-nft", formData);
-      const NFT_URI = `https://ipfs.io/ipfs/${res.data.IpfsHash}`;
-
       if (window.ethereum === null) {
-        setLoadingMsg("Please Install MetaMask");
+        setLoadingMsg({ text: "Please Install MetaMask", status: "error" });
       } else {
+        setLoadingMsg({ text: "Minting NFT...", status: "pending" });
+
+        let formData = new FormData();
+        formData.append("name", nftData.name);
+        formData.append("price", nftData.price);
+        formData.append("file", file);
+
+        let res = await axios.post("/api/mint-nft", formData);
+        const NFT_URI = `https://ipfs.io/ipfs/${res.data.IpfsHash}`;
+
         let provider = new ethers.BrowserProvider(window.ethereum);
         let signer = await provider.getSigner();
+        let address = await signer.getAddress();
+        let balance = await provider.getBalance(address);
+
+        if (balance < nftData.price) {
+          setLoadingMsg({
+            text: "Insufficient balance to mint NFT",
+            status: "error",
+          });
+          throw new Error("Insufficient balance to mint NFT");
+        }
+
         let contract = new ethers.Contract(
           process.env.NEXT_PUBLIC_NFT_MARKETPLACE_ADDRESS,
           NFTMarketplace.abi,
@@ -45,11 +60,15 @@ export default function MintNFT() {
         });
 
         if (transaction) {
-          setLoadingMsg("NFT Minted Successfully");
+          setLoadingMsg({ text: "NFT Minted Successfully", status: "success" });
         }
       }
     } catch (error) {
-      console.error("Error minting NFT", error.message);
+      setLoadingMsg({
+        text: error.message,
+        status: "error",
+      });
+      console.error("Error minting NFT:", error.message);
     }
   };
 
@@ -102,8 +121,24 @@ export default function MintNFT() {
             required
           />
         </div>
-        <div>
-          <p className="text-green-600 font-bold">{loadingMsg}</p>
+        <div className="w-full text-center">
+          {loadingMsg.status === "pending" && (
+            <p className="bg-orange-400 text-black rounded font-bold p-2">
+              {loadingMsg.text}
+            </p>
+          )}
+
+          {loadingMsg.status === "success" && (
+            <p className="bg-green-500 text-black rounded font-bold p-2">
+              {loadingMsg.text}
+            </p>
+          )}
+
+          {loadingMsg.status === "error" && (
+            <p className="bg-rose-500 text-black rounded font-bold p-2">
+              {loadingMsg.text}
+            </p>
+          )}
         </div>
         <div className="flex flex-col justify-around items-start mt-5 min-w-full">
           <button

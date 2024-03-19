@@ -6,13 +6,19 @@ import { useEffect, useState } from "react";
 
 export default function NFTCard(data) {
   const [isOwner, setIsOwner] = useState(false);
+  const [loadingMsg, setLoadingMsg] = useState({
+    text: "",
+    status: "",
+  });
+
   let imgURL = "https://ipfs.io/ipfs/" + data.data.img;
 
   let buyNFT = async (id, price) => {
     try {
       if (window.ethereum === null) {
-        console.log("Please Install MetaMask");
+        setLoadingMsg({ text: "Please Install MetaMask", status: "error" });
       } else {
+        setLoadingMsg({ text: "Purchasing NFT...", status: "pending" });
         let provider = new ethers.BrowserProvider(window.ethereum);
         let signer = await provider.getSigner();
 
@@ -20,23 +26,37 @@ export default function NFTCard(data) {
         let balance = await provider.getBalance(address);
         let NFTPriceInWei = parseEther(price.toString());
 
+        if (balance < NFTPriceInWei) {
+          setLoadingMsg({
+            text: "Insufficient balance to buy NFT",
+            status: "error",
+          });
+          throw new Error("Insufficient balance to buy NFT");
+        }
+
         let contract = new ethers.Contract(
           process.env.NEXT_PUBLIC_NFT_MARKETPLACE_ADDRESS,
           NFTMarketplace.abi,
           signer
         );
 
-        if (balance < NFTPriceInWei) {
-          throw new Error("Insufficient balance to buy this NFT");
-        }
-
         const transaction = await contract.buyNFT(id, {
           value: NFTPriceInWei,
         });
         await transaction.wait();
+
+        if (transaction) {
+          setLoadingMsg({
+            text: "NFT Purchased Successfully",
+            status: "success",
+          });
+        }
       }
     } catch (error) {
-      console.error("Error buying NFT", error.message);
+      setLoadingMsg({
+        text: error.message,
+        status: "error",
+      });
     }
   };
 
@@ -77,6 +97,25 @@ export default function NFTCard(data) {
             {data.data.price} ETH
           </p>
         </div>
+      </div>
+      <div className="text-center mx-3">
+        {loadingMsg.status === "pending" && (
+          <p className="bg-orange-400 text-black rounded font-bold p-2">
+            {loadingMsg.text}
+          </p>
+        )}
+
+        {loadingMsg.status === "success" && (
+          <p className="bg-green-500 text-black rounded font-bold p-2">
+            {loadingMsg.text}
+          </p>
+        )}
+
+        {loadingMsg.status === "error" && (
+          <p className="bg-rose-500 text-black rounded font-bold p-2">
+            {loadingMsg.text}
+          </p>
+        )}
       </div>
       <div className="py-3 mx-3">
         {!isOwner ? (
