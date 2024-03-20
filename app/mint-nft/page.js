@@ -1,6 +1,7 @@
 "use client";
 import axios from "axios";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 export default function MintNFT() {
   const [nftData, setNftData] = useState({
@@ -8,11 +9,10 @@ export default function MintNFT() {
     price: "",
   });
   const [file, setFile] = useState(null);
-  const [loadingMsg, setLoadingMsg] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoadingMsg("Minting NFT...");
+    toast.info("Minting NFT...");
 
     try {
       let formData = new FormData();
@@ -22,7 +22,7 @@ export default function MintNFT() {
 
       let res = await axios.post("/api/mint-nft", formData);
     } catch (error) {
-      console.error("Error minting NFT", error.message);
+      toast.error("Error minting NFT ", error.message);
     }
   };
 
@@ -74,9 +74,6 @@ export default function MintNFT() {
             onChange={(e) => setNftData({ ...nftData, price: e.target.value })}
             required
           />
-        </div>
-        <div>
-          <p className="text-green-600 font-bold">{loadingMsg}</p>
         </div>
         <div className="flex flex-col justify-around items-start mt-5 min-w-full">
           <button
