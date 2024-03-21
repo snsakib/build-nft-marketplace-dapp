@@ -22,7 +22,7 @@ export default function MintNFT() {
 
       let res = await axios.post("/api/mint-nft", formData);
     } catch (error) {
-      toast.error("Error minting NFT ", error.message);
+      toast.error("Error minting NFT: " + error.message);
     }
   };
 
