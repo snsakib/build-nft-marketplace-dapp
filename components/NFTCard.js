@@ -3,6 +3,7 @@ import { ethers, parseEther } from "ethers";
 import NFTMarketplace from "../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 export default function NFTCard(data) {
   const [isOwner, setIsOwner] = useState(false);
@@ -11,7 +12,7 @@ export default function NFTCard(data) {
   let buyNFT = async (id, price) => {
     try {
       if (window.ethereum === null) {
-        console.log("Please Install MetaMask");
+        toast.error("Please Install MetaMask");
       } else {
         let provider = new ethers.BrowserProvider(window.ethereum);
         let signer = await provider.getSigner();
@@ -27,16 +28,20 @@ export default function NFTCard(data) {
         );
 
         if (balance < NFTPriceInWei) {
-          throw new Error("Insufficient balance to buy this NFT");
+          throw new Error("Insufficient balance to buy NFT");
         }
 
         const transaction = await contract.buyNFT(id, {
           value: NFTPriceInWei,
         });
         await transaction.wait();
+
+        if (transaction) {
+          toast.success("NFT purchased successfully!");
+        }
       }
     } catch (error) {
-      console.error("Error buying NFT", error.message);
+      toast.error("Error buying NFT: " + error.message);
     }
   };
 
