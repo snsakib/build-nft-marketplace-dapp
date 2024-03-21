@@ -2,6 +2,7 @@
 import axios from "axios";
 import { ethers, parseEther } from "ethers";
 import { useState } from "react";
+import { toast } from "react-toastify";
 import NFTMarketplace from "../../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json";
 
 export default function MintNFT() {
@@ -10,11 +11,10 @@ export default function MintNFT() {
     price: "",
   });
   const [file, setFile] = useState(null);
-  const [loadingMsg, setLoadingMsg] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoadingMsg("Minting NFT...");
+    toast.info("Minting NFT...");
 
     try {
       let formData = new FormData();
@@ -26,17 +26,24 @@ export default function MintNFT() {
       const NFT_URI = `https://ipfs.io/ipfs/${res.data.IpfsHash}`;
 
       if (window.ethereum === null) {
-        setLoadingMsg("Please Install MetaMask");
+        toast.error("Please Install MetaMask");
       } else {
         let provider = new ethers.BrowserProvider(window.ethereum);
         let signer = await provider.getSigner();
+        let address = await signer.getAddress();
+        let balance = await provider.getBalance(address);
+        let NFTPriceInWei = parseEther(nftData.price);
+
+        if (balance < NFTPriceInWei) {
+          throw new Error("Insufficient balance to mint NFT");
+        }
+
         let contract = new ethers.Contract(
           process.env.NEXT_PUBLIC_NFT_MARKETPLACE_ADDRESS,
           NFTMarketplace.abi,
           signer
         );
 
-        let NFTPriceInWei = parseEther(nftData.price);
         let listingPrice = await contract.listingPrice();
         listingPrice = listingPrice.toString();
 
@@ -44,12 +51,14 @@ export default function MintNFT() {
           value: listingPrice,
         });
 
+        await transaction.wait();
+
         if (transaction) {
-          setLoadingMsg("NFT Minted Successfully");
+          toast.success("NFT Minted Successfully");
         }
       }
     } catch (error) {
-      console.error("Error minting NFT", error.message);
+      toast.error("Error minting NFT: " + error.message);
     }
   };
 
@@ -101,9 +110,6 @@ export default function MintNFT() {
             onChange={(e) => setNftData({ ...nftData, price: e.target.value })}
             required
           />
-        </div>
-        <div>
-          <p className="text-green-600 font-bold">{loadingMsg}</p>
         </div>
         <div className="flex flex-col justify-around items-start mt-5 min-w-full">
           <button
